@@ -1,0 +1,13 @@
+.myPostPage {
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* Posts Section */
+.myPostPage__postSection {
+    height: 92vh;
+    padding: 20px 10px 10px 10px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+}
