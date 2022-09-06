@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Navbar from '../../Components/Navbar/Navbar'
 import "./AddPostPage.css"
 import { IoImagesOutline } from "react-icons/io5"
 // firebase imports
 import { db, storage } from '../../firebaseConfig'
-import { collection, addDoc, Timestamp } from 'firebase/firestore'
+import { collection, addDoc, Timestamp, query, where, getDocs } from 'firebase/firestore'
 import { ref, uploadBytesResumable, getDownloadURL } from 'firebase/storage'
 import { v4 } from "uuid";
 import { useNavigate } from 'react-router-dom'
@@ -26,6 +26,7 @@ function AddPostPage() {
 
   const [description, setDescription] = useState("");
   const [imageFile, setimageFile] = useState(null);
+  const [groups, setGroups] = useState([]);
 
 
 
@@ -60,12 +61,43 @@ function AddPostPage() {
   // 
 
 
+
+
+  // Get All Groups
+  const [myGroups, setmyGroups] = useState([]);
+  useEffect(() => {
+    async function getMyGroupsFromDatabase() {
+      const q = query
+        (
+          collection(db, "groups"),
+          where("created_by", "==", userId),
+        )
+      const querySnapshot = await getDocs(q);
+
+      setmyGroups(querySnapshot.docs.map
+        (
+          (doc) => (
+            {
+              doc_id: doc.id,
+              doc_data: doc.data(),
+            }
+          )
+        )
+      );
+    }
+
+    getMyGroupsFromDatabase();
+  }, [])
+
+
+
+
   function addPost(event) {
     event.preventDefault();
-    if (description === "" && imageFile === null) {// check if both inputs are empty
-      setError("Both fields cannot be empty")
+    if (description === "" && groups === [] && imageFile === null) {// check if both inputs are empty
+      setError("All fields cannot be empty")
     }
-    else if (description !== "" && imageFile === null) {
+    else if (description !== "" && groups !== [] && imageFile === null) {
       addDocumentToDatabase("")
     }
     else {
@@ -105,6 +137,7 @@ function AddPostPage() {
           username: userName,
           description: description,
           image: downloadURL,
+          groups: groups,
           date: Timestamp.now(),
         })
       navigate("/my-posts")
@@ -156,6 +189,19 @@ function AddPostPage() {
               accept="image/*"
             />
           </div>
+
+          {/* groups */}
+          {myGroups.length > 0 ?
+            myGroups.map((group) => (
+              <>
+                <label htmlFor={group.doc_id}>{group.doc_data.name}</label>
+                <input type="checkbox" value={group.doc_id} id={group.doc_id} name={group.doc_id} key={group.doc_id} onChange={(e) => { setGroups([...groups, group.doc_id]) }} />
+              </>
+            ))
+            :
+            <h2>You have no groups</h2>
+          }
+
 
           <p id='error'>{error}</p>
 

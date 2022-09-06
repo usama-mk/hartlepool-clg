@@ -6,9 +6,10 @@ import { SiHiveBlockchain } from "react-icons/si"
 import { useNavigate } from "react-router-dom";
 // imports for authentication
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
+import { auth, db } from '../../firebaseConfig';
 import { useDispatch } from "react-redux";
 import { logIn } from '../../features/userSlice';
+import { addDoc, collection } from 'firebase/firestore';
 
 
 function RegisterPage() {
@@ -41,6 +42,8 @@ function RegisterPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [reg, setReg] = useState("");
+  const [dob, setDob] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -64,15 +67,26 @@ function RegisterPage() {
             displayName: name,
           }).then(//name updated
             () => {
-              dispatch(
-                logIn({
+              addDoc(collection(db, 'users'),
+                {
                   uid: userCredential.user.uid,
-                  email: userCredential.user.email,
-                  name: userCredential.user.displayName,
+                  dob: dob,
+                  reg_no: reg,
+                  role: "user",
+                  following: []
                 })
-              )
-              navigate("/home")
             }
+          ).then(() => {//user added to collection
+            dispatch(
+              logIn({
+                uid: userCredential.user.uid,
+                email: userCredential.user.email,
+                name: userCredential.user.displayName,
+                role: "user"
+              })
+            )
+            navigate("/home")
+          }
           )
         }
       )
@@ -113,6 +127,30 @@ function RegisterPage() {
             placeholder='Name'
             value={name}
             onChange={(event) => setName(event.target.value)}
+            required={true}
+            onKeyUp={() => setError("")}
+          />
+        </div>
+
+        {/* reg */}
+        <div className="registerPage__formInputGroup">
+          <input
+            type="text"
+            placeholder='Reg No'
+            value={reg}
+            onChange={(event) => setReg(event.target.value)}
+            required={true}
+            onKeyUp={() => setError("")}
+          />
+        </div>
+
+        {/* dob */}
+        <div className="registerPage__formInputGroup">
+          <input
+            type="date"
+            placeholder='Name'
+            value={dob}
+            onChange={(event) => setDob(event.target.value)}
             required={true}
             onKeyUp={() => setError("")}
           />
@@ -186,6 +224,7 @@ function RegisterPage() {
           Register
         </button>
 
+        <br />
         <p onClick={() => navigate("/")}>Already Have An Account</p>
       </form>
 

@@ -4,6 +4,7 @@ import './App.css';
 import HomePage from "./Pages/HomePage/HomePage"
 import LikedPage from "./Pages/LikedPage/LikedPage"
 import AddPostPage from "./Pages/AddPostPage/AddPostPage"
+import AddGroupPage from "./Pages/AddGroupPage/AddGroupPage"
 import MyPostPage from './Pages/MyPostPage/MyPostPage';
 import ProfilePage from './Pages/ProfilePage/ProfilePage';
 import Error404 from './Pages/Error404/Error404';
@@ -17,82 +18,88 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <div className="app">
+    <BrowserRouter>
+      <Routes>
 
-      <BrowserRouter>
-        <Routes>
-
-          {/* 404 */}
-          <Route
-            path='*'
-            element={<Error404 />
-            }
-          />
+        {/* 404 */}
+        <Route
+          path='*'
+          element={<Error404 />
+          }
+        />
 
 
-          {/* LOGIN & SIGNUP */}
-          {/* public routes */}
-          <Route
-            path='/'
-            element={<LoginPage />}
-          />
+        {/* LOGIN & SIGNUP */}
+        {/* public routes */}
+        <Route
+          path='/'
+          element={<LoginPage />}
+        />
 
-          <Route
-            path='/register'
-            element={<RegisterPage />}
-          />
+        <Route
+          path='/register'
+          element={<RegisterPage />}
+        />
 
 
-          {/* PAGES */}
-          {/* protected routes */}
-          <Route
-            path='/home'
-            element={
-              <ProtectedRoute>
-                <HomePage />
-              </ProtectedRoute>
-            }
-          />
+        {/* PAGES */}
+        {/* protected routes */}
+        <Route
+          path='/home'
+          element={
+            <ProtectedRoute>
+              <HomePage />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path='/liked-posts'
-            element={
-              <ProtectedRoute>
-                <LikedPage />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path='/liked-posts'
+          element={
+            <ProtectedRoute>
+              <LikedPage />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path='/add-post'
-            element={
-              <ProtectedRoute>
-                <AddPostPage />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path='/add-post'
+          element={
+            <ProtectedRoute teacherOnly={true}>
+              <AddPostPage />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path='/my-posts'
-            element={
-              <ProtectedRoute>
-                <MyPostPage />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path='/add-group'
+          element={
+            <ProtectedRoute teacherOnly={true}>
+              <AddGroupPage />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path='/profile'
-            element={
-              <ProtectedRoute>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
+        <Route
+          path='/my-posts'
+          element={
+            <ProtectedRoute>
+              <MyPostPage />
+            </ProtectedRoute>
+          }
+        />
 
-        </Routes>
-      </BrowserRouter>
-    </div>
+        <Route
+          path='/profile'
+          element={
+            <ProtectedRoute>
+              <ProfilePage />
+            </ProtectedRoute>
+          }
+        />
+
+      </Routes>
+    </BrowserRouter>
   );
 }
 

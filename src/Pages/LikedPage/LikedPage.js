@@ -3,7 +3,7 @@ import "./LikedPage.css"
 import Navbar from "../../Components/Navbar/Navbar"
 import PostCard from '../../Components/PostCard/PostCard'
 // firebase imports
-import { collection, doc, getDoc, getDocs, query, where } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, getDocs, orderBy, query, setDoc, where } from "firebase/firestore";
 import { db } from '../../firebaseConfig';
 // imports for authentication
 import { useSelector } from 'react-redux';
@@ -14,58 +14,42 @@ function LikedPage() {
   const userName = user.name;
   const userId = user.uid;
 
-  // Fetch liked Posts Ids
-  const [postsIds, setPostIds] = useState([]);
+  // Get All Posts
+  const [allGroups, setAllGroups] = useState([]);
   useEffect(() => {
-    async function getLikedIdsFromDatabase() {
-      const q = query
-        (
-          collection(db, "votes"),
-          where("voted_by", "==", userId),
-          where("voted", "==", "up"),
-        )
+    async function getAllDocumentsFromDatabase() {
+      const q = query(
+        collection(db, "groups"),
+        orderBy("date")
+      )
       const querySnapshot = await getDocs(q);
 
-      setPostIds(querySnapshot.docs.map
+      setAllGroups(querySnapshot.docs.reverse().map
         (
           (doc) => (
             {
-              id: doc.data().post_id
+              doc_id: doc.id,
+              doc_data: doc.data(),
             }
           )
         )
-      )
+      );
     }
-    getLikedIdsFromDatabase();
-  }, [])
+    getAllDocumentsFromDatabase();
+  })
 
 
-  // Get All Liked Posts
-  const [allLikedPosts, setAllLikedPosts] = useState([]);
-  useEffect(() => {
-    function getAllLikedPostsFromDatabase() {
 
-      postsIds.forEach(async ({ id }) => {
-        const querySnapshot = await getDoc(doc(db, "posts", id));
+  const followGroup = async (group_id) => {
+    const d = query(collection(db, "users"), where("uid", "==", userId))
+    const querySnapshot = await getDocs(d);
 
-        if (!allLikedPosts.some(x => x.doc_id === querySnapshot.id)) {
-          setAllLikedPosts(
-            (allLikedPosts) =>
-              [
-                ...allLikedPosts,
-                {
-                  doc_id: querySnapshot.id,
-                  doc_data: querySnapshot.data(),
-                }
-              ]
-          )
-        }
-      });
+    if (querySnapshot.docs.length === 1) {
+      await setDoc(doc(db, "users", querySnapshot.docs.at(0).id), {
+        following: arrayUnion(group_id)
+      }, { merge: true });
     }
-
-    getAllLikedPostsFromDatabase();
-
-  }, [postsIds])
+  }
 
 
   return (
@@ -75,24 +59,23 @@ function LikedPage() {
       <div className="likedpage__postSection">
 
         {
-          allLikedPosts.length > 0
+          allGroups.length > 0
             ?
-            allLikedPosts.map(({ doc_id, doc_data }) => (
-              < PostCard
-                key={doc_id}
-                postId={doc_id}
-                postedBy={doc_data.posted_by}
-                userId={userId}
-                username={doc_data.username}
-                date={
-                  doc_data.date.toDate().toLocaleString([], { month: '2-digit', day: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' })
-                }
-                description={doc_data.description}
-                image={doc_data.image}
-              />
+            allGroups.map(({ doc_id, doc_data }) => (
+              <>
+                <h5>{doc_data.name} &nbsp;&nbsp;&nbsp;
+                  <span>
+                    <button
+                      onClick={() => followGroup(doc_id)}
+                    >
+                      follow
+                    </button>
+                  </span>
+                </h5>
+              </>
             ))
             :
-            <h3 style={{ textAlign: "center", color: "#CED0D4", marginTop: "50px" }}>No Liked Post Yet !</h3>
+            <h3 style={{ textAlign: "center", color: "#CED0D4", marginTop: "50px" }}>No Groups Created Yet !</h3>
         }
 
       </div>
@@ -100,4 +83,4 @@ function LikedPage() {
   )
 }
 
-export default LikedPage 
+export default LikedPage;

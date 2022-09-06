@@ -73,6 +73,13 @@ function Navbar({ activePage }) {
                 >
                     <AiOutlineAppstoreAdd />
                 </li>
+
+                <li
+                    className={`navbar__navitem ${activePage === "addGroup" ? "navbar__navitem--active" : ""}`}
+                    onClick={() => { navigate("/add-group") }}
+                >
+                    <AiOutlineAppstoreAdd />group
+                </li>
             </ul>
             {/* SETTINGS */}
             <div className="navbar__setting">

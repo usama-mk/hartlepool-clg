@@ -6,9 +6,10 @@ import { SiHiveBlockchain } from "react-icons/si"
 // imports for authentication
 import { useNavigate } from "react-router-dom";
 import { sendPasswordResetEmail, signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../../firebaseConfig';
+import { auth, db } from '../../firebaseConfig';
 import { useDispatch, useSelector } from 'react-redux';
 import { logIn, selectUser } from '../../features/userSlice';
+import { collection, getDocs, limit, query, where } from 'firebase/firestore';
 
 
 function LoginPage() {
@@ -59,14 +60,23 @@ function LoginPage() {
     signInWithEmailAndPassword(auth, email, password)
       .then(//user logged in
         (userCredential) => {
-          dispatch(
-            logIn({
-              uid: userCredential.user.uid,
-              email: userCredential.user.email,
-              name: userCredential.user.displayName,
-            })
-          )
-          navigate("/home")
+          const q = query
+            (
+              collection(db, "users"),
+              where("uid", "==", userCredential.user.uid),
+              limit(1)
+            )
+          getDocs(q).then((querySnapshot) => {
+            dispatch(logIn(
+              {
+                uid: userCredential.user.uid,
+                email: userCredential.user.email,
+                name: userCredential.user.displayName,
+                role: querySnapshot.docs[0].data().role,
+              }
+            ))
+            navigate("/home")
+          })
         }
       )
       .catch((error) => {
