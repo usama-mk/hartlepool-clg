@@ -55,7 +55,7 @@ function LikedPage() {
 
 
 
-  const followGroup = async (group_id) => {
+  const followGroup = async (group_id, group_name) => {
     const d = query(collection(db, "users"), where("uid", "==", userId))
     const querySnapshot = await getDocs(d);
 
@@ -63,6 +63,8 @@ function LikedPage() {
       await setDoc(doc(db, "users", querySnapshot.docs.at(0).id), {
         following: arrayUnion(group_id)
       }, { merge: true });
+      alert(`You are following ${group_name} group !`);
+      window.location.reload();
     }
   }
 
@@ -91,7 +93,7 @@ function LikedPage() {
                     <button
                       onClick={() => {
                         if (!followed) {
-                          followGroup(doc_id);
+                          followGroup(doc_id, doc_data.name);
                         }
                       }}
                     >
