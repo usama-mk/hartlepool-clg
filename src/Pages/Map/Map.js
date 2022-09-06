@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useState, useMemo } from "react";
+import React from "react";
+import { useState } from "react";
 
 import Map, {
   Marker,
@@ -10,49 +10,41 @@ import Map, {
   GeolocateControl,
 } from "react-map-gl";
 import Pin from "./Pin.tsx";
-import CITIES from "./cities.json";
 import "./Map.css";
-
 
 import { Link } from "react-router-dom";
 
-
-const TOKEN = "pk.eyJ1IjoiY2xpZW50cy1maXJlYmFzZSIsImEiOiJja28wbXpsbWQwZXMyMm5ud3M0bWs0bTJuIn0.Fi78C9sKb-9P4w9tx9A6dg" // Set your mapbox token here
+const TOKEN =
+  "pk.eyJ1IjoiY2xpZW50cy1maXJlYmFzZSIsImEiOiJja28wbXpsbWQwZXMyMm5ud3M0bWs0bTJuIn0.Fi78C9sKb-9P4w9tx9A6dg"; // Set your mapbox token here
 
 function MapScreen() {
   const [popupInfo, setPopupInfo] = useState(null);
-  const [loaded, setLoaded] = useState(false);
   const [coordinates, setCoordinates] = useState({ lat: "40", lon: "-100" });
-  const [location, setLocation] = useState("");
 
-  const [rooms, setRooms] = useState([{
-    name: "room 1",
-    name: "room 2",
-    coordinates: {
-    lat: 40.7128,
-    lon: -74.0060
+  const [rooms, setRooms] = useState([
+    {
+      name: "room 1",
+      location: "near hallway",
+      coordinates: {
+        lat: 40.7128,
+        lon: -74.006,
+      },
+      type: "paidService",
+      id: 1,
+      type: "paidService",
+      id: 1,
     },
-    type: "paidService",
-    id: 1,
-    type: "paidService",
-    id: 1,
-
-  },
-  {
-    name: "room 2",
-    coordinates: {
-    lat: 20.7128,
-    lon: -64.0060
+    {
+      name: "room 2",
+      location: "near hallway",
+      coordinates: {
+        lat: 20.7128,
+        lon: -64.006,
+      },
+      type: "paidService",
+      id: 1,
     },
-    type: "paidService",
-    id: 1,
-
-  }
-]);
-
- 
-
-
+  ]);
 
   const geolocateControlRef = React.useCallback((ref) => {
     if (ref) {
@@ -61,24 +53,8 @@ function MapScreen() {
     }
   }, []);
 
-  // const pins = useMemo(
-  //   () =>
-  //   paidServices?.map((ps, index) => (
-  //       <Marker
-  //         key={`marker-${index}`}
-  //         longitude={ps.coordinates.lon}
-  //         latitude={ps.coordinates.lat}
-  //         anchor="bottom"
-  //       >
-  //         <Pin onClick={() => setPopupInfo(ps)} />
-  //       </Marker>
-  //     )),
-  //   []
-  // );
-
   return (
     <div style={{ height: "70vh" }}>
-       
       <Map
         onLoad={() => {}}
         initialViewState={{
@@ -99,21 +75,18 @@ function MapScreen() {
         <NavigationControl position="top-left" />
         <ScaleControl />
         {/* PS Posts */}
-        {rooms
-             
-              .map((ps, index) => (
-                <Marker
-                  key={`marker-${index}`}
-                  longitude={ps.coordinates.lon}
-                  latitude={ps.coordinates.lat}
-                  anchor="bottom"
-                >
-                  <Pin onClick={() => setPopupInfo(ps)} pinColor="red" />
-                </Marker>
-              ))
-         }
+        {rooms.map((ps, index) => (
+          <Marker
+            key={`marker-${index}`}
+            longitude={ps.coordinates.lon}
+            latitude={ps.coordinates.lat}
+            anchor="bottom"
+          >
+            <Pin onClick={() => setPopupInfo(ps)} pinColor="red" />
+          </Marker>
+        ))}
 
-        {/* {popupInfo && (
+        {popupInfo && (
           <Popup
             anchor="top"
             longitude={Number(popupInfo.coordinates.lon)}
@@ -122,11 +95,11 @@ function MapScreen() {
             onClose={() => setPopupInfo(null)}
           >
             <div>
-              {popupInfo?.location}, {popupInfo?.price} |{" "}
+              {popupInfo?.location}, {popupInfo?.name} |{" "}
               <Link
                 target="_new"
                 to={`/${
-                  popupInfo.price
+                  popupInfo.name
                     ? "isMovable" in popupInfo
                       ? "rentposts"
                       : "paidservice"
@@ -138,12 +111,8 @@ function MapScreen() {
             </div>
             <img width="100%" src={popupInfo.thumbnailImage} />
           </Popup>
-        )} */}
-         
-
-         
+        )}
       </Map>
-      {/* <ControlPanel /> */}
     </div>
   );
 }
