@@ -9,6 +9,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../features/userSlice';
 
+
 function MyPostPage() {
     const user = useSelector(selectUser);
     const userName = user.name;
