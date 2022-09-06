@@ -42,7 +42,6 @@ function App() {
               role: querySnapshot.docs[0].data().role,
             }
           ))
-          console.log("first")
         })
       } else {
         dispatch(logOut());

@@ -3,7 +3,7 @@ import "./LikedPage.css"
 import Navbar from "../../Components/Navbar/Navbar"
 import PostCard from '../../Components/PostCard/PostCard'
 // firebase imports
-import { arrayUnion, collection, doc, getDoc, getDocs, orderBy, query, setDoc, where } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, where } from "firebase/firestore";
 import { db } from '../../firebaseConfig';
 // imports for authentication
 import { useSelector } from 'react-redux';
@@ -18,25 +18,40 @@ function LikedPage() {
   const [allGroups, setAllGroups] = useState([]);
   useEffect(() => {
     async function getAllDocumentsFromDatabase() {
-      const q = query(
+
+      const querySnapshot = await getDocs(query
+        (
+          collection(db, "users"),
+          where("uid", "==", userId),
+          limit(1)
+        ));
+
+      const following = querySnapshot.docs[0].data().following;
+
+      const querySnapshot1 = await getDocs(query(
         collection(db, "groups"),
         orderBy("date")
-      )
-      const querySnapshot = await getDocs(q);
+      ));
+      querySnapshot1.docs.reverse().forEach(doc => {
+        var followed = false;
+        if (following.includes(doc.id)) {
+          followed = true;
+        }
 
-      setAllGroups(querySnapshot.docs.reverse().map
-        (
-          (doc) => (
-            {
-              doc_id: doc.id,
-              doc_data: doc.data(),
-            }
-          )
-        )
-      );
+        setAllGroups((allPosts) => [...allPosts, {
+          doc_id: doc.id,
+          doc_data: doc.data(),
+          followed: followed
+        }])
+      })
     }
     getAllDocumentsFromDatabase();
-  })
+  }, [userId])
+
+
+
+
+
 
 
 
@@ -52,6 +67,14 @@ function LikedPage() {
   }
 
 
+
+
+
+
+
+
+
+
   return (
     <div className='likedpage'>
       <Navbar activePage={"liked"} />
@@ -61,14 +84,18 @@ function LikedPage() {
         {
           allGroups.length > 0
             ?
-            allGroups.map(({ doc_id, doc_data }) => (
+            allGroups.map(({ doc_id, doc_data, followed }) => (
               <>
                 <h5>{doc_data.name} &nbsp;&nbsp;&nbsp;
                   <span>
                     <button
-                      onClick={() => followGroup(doc_id)}
+                      onClick={() => {
+                        if (!followed) {
+                          followGroup(doc_id);
+                        }
+                      }}
                     >
-                      follow
+                      {followed ? "followed" : "follow"}
                     </button>
                   </span>
                 </h5>
