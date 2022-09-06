@@ -6,7 +6,7 @@ import { selectUser } from "../../features/userSlice";
 import "./HelpPage.css";
 
 const HelpPage = () => {
-    const user = useSelector(selectUser);
+    const { user } = useSelector(selectUser);
     const userName = user.name;
     const userId = user.uid;
 

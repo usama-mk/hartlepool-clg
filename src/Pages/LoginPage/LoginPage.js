@@ -33,17 +33,19 @@ function LoginPage() {
 
 
 
-  // MAIN FUNCTIONS
-  // 
-  // 
-
   // Check if User is Already Logged in
-  const user = useSelector(selectUser);
+  const { user } = useSelector(selectUser);
   useEffect(() => {
     if (user)
       navigate("/home");
-  }, [])
+    return
+  }, [user])
 
+
+
+  // MAIN FUNCTIONS
+  // 
+  // 
 
 
   // Login User

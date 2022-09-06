@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import "./RegisterPage.css"
 // import icons
 import { FaEye, FaEyeSlash } from "react-icons/fa"
@@ -7,15 +7,15 @@ import { useNavigate } from "react-router-dom";
 // imports for authentication
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { auth, db } from '../../firebaseConfig';
-import { useDispatch } from "react-redux";
-import { logIn } from '../../features/userSlice';
+import { useDispatch, useSelector } from "react-redux";
+import { logIn, selectUser } from '../../features/userSlice';
 import { addDoc, collection } from 'firebase/firestore';
 
 
 function RegisterPage() {
-
   const navigate = useNavigate();//For Navigation
   const dispatch = useDispatch();
+
 
   // toggle show password
   const [showPassword, setShowPassword] = useState(false);
@@ -34,6 +34,16 @@ function RegisterPage() {
       setShowConfirmPassword(true)
     }
   }
+
+
+
+
+  // Check if User is Already Logged in
+  const { user } = useSelector(selectUser);
+  useEffect(() => {
+    if (user)
+      navigate("/home");
+  }, [user, navigate])
 
   // MAIN FUNCTIONS
   // 

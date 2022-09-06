@@ -14,7 +14,7 @@ import { selectUser } from '../../features/userSlice';
 
 
 function AddPostPage() {
-    const user = useSelector(selectUser);
+    const { user } = useSelector(selectUser);
     const userName = user.name;
     const userId = user.uid;
 

@@ -15,7 +15,7 @@ import { selectUser } from '../../features/userSlice';
 
 
 function ProfilePage() {
-    const user = useSelector(selectUser);
+    const { user } = useSelector(selectUser);
     const userName = user.name;
     const userEmail = user.email;
     const userId = user.uid;
