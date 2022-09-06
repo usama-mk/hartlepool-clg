@@ -27,7 +27,6 @@ function HomePage() {
 
 
     // Get All Posts of Followed Groups
-    // const [following, setFollowing] = useState([]);
     const [allPosts, setAllPosts] = useState([]);
     useEffect(() => {
         async function getRelevantPosts() {
@@ -47,7 +46,7 @@ function HomePage() {
 
             querySnapshot1.docs.reverse().forEach(doc => {
                 if (doc.data().groups.some(x => following.includes(x))) {
-                    console.log(doc.data().description)
+                    // console.log(doc.data().description)
                     setAllPosts((allPosts) => [...allPosts, {
                         doc_id: doc.id,
                         doc_data: doc.data(),

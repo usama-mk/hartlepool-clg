@@ -44,6 +44,7 @@ function RegisterPage() {
   const [email, setEmail] = useState("");
   const [reg, setReg] = useState("");
   const [dob, setDob] = useState("");
+  const [course, setCourse] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState("");
@@ -73,7 +74,8 @@ function RegisterPage() {
                   dob: dob,
                   reg_no: reg,
                   role: "user",
-                  following: []
+                  following: [],
+                  course: course
                 })
             }
           ).then(() => {//user added to collection
@@ -139,6 +141,18 @@ function RegisterPage() {
             placeholder='Reg No'
             value={reg}
             onChange={(event) => setReg(event.target.value)}
+            required={true}
+            onKeyUp={() => setError("")}
+          />
+        </div>
+
+        {/* reg */}
+        <div className="registerPage__formInputGroup">
+          <input
+            type="text"
+            placeholder='Course Name'
+            value={course}
+            onChange={(event) => setCourse(event.target.value)}
             required={true}
             onKeyUp={() => setError("")}
           />

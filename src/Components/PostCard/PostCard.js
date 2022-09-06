@@ -72,6 +72,10 @@ function PostCard({
         }
     }
 
+
+
+
+
     return (
         <div className="postcard">
             {postDeleted === false ? (
