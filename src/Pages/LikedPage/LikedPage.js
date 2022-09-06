@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import "./LikedPage.css"
 import Navbar from "../../Components/Navbar/Navbar"
-import PostCard from '../../Components/PostCard/PostCard'
 // firebase imports
-import { arrayUnion, collection, doc, getDoc, getDocs, limit, orderBy, query, setDoc, where } from "firebase/firestore";
+import { arrayUnion, collection, doc, getDocs, limit, orderBy, query, setDoc, where } from "firebase/firestore";
 import { db } from '../../firebaseConfig';
 // imports for authentication
 import { useSelector } from 'react-redux';
@@ -13,6 +12,8 @@ function LikedPage() {
   const { user } = useSelector(selectUser);
   const userName = user.name;
   const userId = user.uid;
+
+
 
   // Get All Posts
   const [allGroups, setAllGroups] = useState([]);
@@ -49,12 +50,6 @@ function LikedPage() {
   }, [userId])
 
 
-
-
-
-
-
-
   const followGroup = async (group_id, group_name) => {
     const d = query(collection(db, "users"), where("uid", "==", userId))
     const querySnapshot = await getDocs(d);
@@ -69,14 +64,6 @@ function LikedPage() {
   }
 
 
-
-
-
-
-
-
-
-
   return (
     <div className='likedpage'>
       <Navbar activePage={"liked"} />
@@ -88,7 +75,7 @@ function LikedPage() {
             ?
             allGroups.map(({ doc_id, doc_data, followed }) => (
               <>
-                <h5>{doc_data.name} &nbsp;&nbsp;&nbsp;
+                <h5 key={doc_id}>{doc_data.name} &nbsp;&nbsp;&nbsp;
                   <span>
                     <button
                       onClick={() => {
