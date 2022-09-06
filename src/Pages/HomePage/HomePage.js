@@ -5,7 +5,7 @@ import Navbar from "../../Components/Navbar/Navbar"
 import PostCard from '../../Components/PostCard/PostCard'
 // firebase imports
 import { db } from '../../firebaseConfig';
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, orderBy, where, limit } from "firebase/firestore";
 import { useSelector } from 'react-redux';
 import { selectUser } from '../../features/userSlice';
 
@@ -22,29 +22,42 @@ function HomePage() {
     // 
     // 
 
-    // Get All Posts
+
+
+
+
+    // Get All Posts of Followed Groups
+    // const [following, setFollowing] = useState([]);
     const [allPosts, setAllPosts] = useState([]);
     useEffect(() => {
-        async function getAllDocumentsFromDatabase() {
-            const q = query(
+        async function getRelevantPosts() {
+            const querySnapshot = await getDocs(query
+                (
+                    collection(db, "users"),
+                    where("uid", "==", userId),
+                    limit(1)
+                ));
+
+            const following = querySnapshot.docs[0].data().following;
+
+            const querySnapshot1 = await getDocs(query(
                 collection(db, "posts"),
                 orderBy("date")
-            )
-            const querySnapshot = await getDocs(q);
+            ));
 
-            setAllPosts(querySnapshot.docs.reverse().map
-                (
-                    (doc) => (
-                        {
-                            doc_id: doc.id,
-                            doc_data: doc.data(),
-                        }
-                    )
-                )
-            );
+            querySnapshot1.docs.reverse().forEach(doc => {
+                if (doc.data().groups.some(x => following.includes(x))) {
+                    console.log(doc.data().description)
+                    setAllPosts((allPosts) => [...allPosts, {
+                        doc_id: doc.id,
+                        doc_data: doc.data(),
+                    }])
+                }
+            })
         }
-        getAllDocumentsFromDatabase();
-    })
+
+        getRelevantPosts();
+    }, [userId])
 
 
 
