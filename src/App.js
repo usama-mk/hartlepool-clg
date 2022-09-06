@@ -13,6 +13,7 @@ import RegisterPage from './Pages/RegisterPage/RegisterPage';
 import ProtectedRoute from './Utils/ProtectedRoute/ProtectedRoute';
 // import router
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import MapScreen from './Pages/Map/Map';
 
 
 function App() {
@@ -53,7 +54,10 @@ function App() {
               </ProtectedRoute>
             }
           />
-
+<Route
+            path='/map'
+            element={<MapScreen />}
+          />
           <Route
             path='/liked-posts'
             element={
@@ -89,6 +93,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+          
 
         </Routes>
       </BrowserRouter>
